@@ -18,6 +18,7 @@ const App = () => {
 
             <Routes>
                 <Route path="/login" element={<Login />} />
+                {!token && <Route path="*" element={<Login />} />}
                 {token && <Route path="/books" element={<Books />} />}
                 {token && <Route path="/activity-logs" element={<ActivityLogs />} />}
             </Routes >

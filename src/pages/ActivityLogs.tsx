@@ -15,7 +15,7 @@ const ActivityLogs = () => {
     () => {
       return getActivityLogs().then((response) => {
         return response
-    })
+      })
     },
     { cacheTime: 0, keepPreviousData: true, refetchOnWindowFocus: false }
   )
@@ -23,14 +23,25 @@ const ActivityLogs = () => {
 
   const [activityLogsData, setActivityLogsData] = useState(response ? response : [])
 
-  if(response !== undefined && activityLogsData.length === 0 && response.length !== 0){
+  if (response !== undefined && activityLogsData.length === 0 && response.length !== 0) {
     setActivityLogsData(response)
   }
 
 
   return (
     <>
-      <div className="p-5 bg-image" style={{ backgroundImage: "url('https://mdbootstrap.com/img/new/textures/full/171.jpg')", height: '300px' }}></div>
+      <div className="p-5 bg-image" style={{ backgroundImage: "url('https://mdbootstrap.com/img/new/textures/full/171.jpg')", height: '300px' }}>
+        <section className=" text-center container">
+          <div className="row ">
+            <div className="col-lg-6 col-md-8 mx-auto">
+              <h1 className="fw-light">Activity Logs of Booklandia</h1>
+              <p className="lead text-body-secondary">
+                Here you can see the activity logs of Booklandia
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
       <div className=" p-5 container ">
         <table className="table">
           <thead>
@@ -42,7 +53,7 @@ const ActivityLogs = () => {
             </tr>
           </thead>
           <tbody>
-            {activityLogsData.map((activityLog : ActivityLogsModel) => {
+            {activityLogsData.map((activityLog: ActivityLogsModel) => {
               return (
                 <tr key={activityLog.id}>
                   <th scope="row">{activityLog.id}</th>
