@@ -7,10 +7,10 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider client={new QueryClient()}>
+      <BrowserRouter>
         <App />
-      </QueryClientProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </QueryClientProvider>
   </React.StrictMode>,
 )

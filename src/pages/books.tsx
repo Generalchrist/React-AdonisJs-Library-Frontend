@@ -5,50 +5,67 @@ import { BookModel } from '../core/_models'
 import { deleteBook, getBooks } from '../core/_requests'
 import AddBookModal from '../components/AddBookModal'
 import EditBookModal from '../components/EditBookModal'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 
 
 
 
 const books = () => {
-
-    const {
-        data: response,
-    } = useQuery(
-        `get-books`,
-        () => {
-            return getBooks().then((response) => {
-                return response
-            })
+    const queryClient = useQueryClient();
+    const { data: response, isFetching, refetch } = useQuery(
+        'get-books',
+        async () => {
+            const response = await getBooks()
+            return response
         },
-        { cacheTime: 0, keepPreviousData: true, refetchOnWindowFocus: false }
-    )
-
-    
-
-    const [books, setBooks] = useState(response ? response : [])
-    const [showAddBookModal, setShowAddBookModal] = useState(false)
-    const [showEditBookModal, setShowEditBookModal] = useState(false)
-    const [bookId, setBookId] = useState(0)
-
-    if(response !== undefined && books.length === 0 && response.length !== 0){
-        setBooks(response)
-    }
+        {}
+    );
 
 
     const handleDeleteBook = (id: number) => {
-        deleteBook(id).then((response) => {
-            setBooks(response)
-            window.location.href = "/books"
+        deleteBook(id).then(() => {
+            handleRefetchBooks()
         })
     }
+
+    const handleRefetchBooks = () => {
+        queryClient.invalidateQueries('get-books');
+    };
+
+    const [books, setBooks] = useState(response ? response : [])
+    const [bookId, setBookId] = useState(0)
+
+    if (response !== undefined && books.length === 0 && response.length !== 0) {
+        setBooks(response)
+    }
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+    const handleEditCloseModal = () => {
+        setIsEditModalOpen(false);
+    };
+
+    const handleEditOpenModal = () => {
+        setIsEditModalOpen(true);
+    };
+
 
     return (
         <>
             <main>
-                {showAddBookModal && <AddBookModal showAddBookModal={showAddBookModal} />}
-                {showEditBookModal && <EditBookModal bookId={bookId} />}
+                {isModalOpen && <AddBookModal onAddBookSuccess={handleRefetchBooks} onClose={handleCloseModal} />}
+                {isEditModalOpen && <EditBookModal bookId={bookId} onClose={handleEditCloseModal} />}
                 <div className="p-5 bg-image" style={{ backgroundImage: "url('https://mdbootstrap.com/img/new/textures/full/171.jpg')", height: '300px' }}>
                     <section className=" text-center container">
                         <div className="row ">
@@ -62,11 +79,16 @@ const books = () => {
                                 <p>
                                     <button type='button'
                                         className="btn btn-outline-light my-2"
-                                        onClick={() => {
-                                            setShowAddBookModal(true)
-                                        }}
+                                        onClick={handleOpenModal}
 
                                     >Add New Book</button>
+                                    <button
+                                        type='button'
+                                        className="btn btn-outline-light my-2 ml-5"
+                                        onClick={handleRefetchBooks}
+                                    >
+                                        {isFetching ? 'Refreshing...' : 'Refresh'}
+                                    </button>
                                 </p>
                             </div>
                         </div>
@@ -93,7 +115,7 @@ const books = () => {
                                                     <div className="btn-group">
                                                         <button type="button" className="btn btn-sm btn-outline-secondary"
                                                             onClick={() => {
-                                                                setShowEditBookModal(true)
+                                                                handleEditOpenModal()
                                                                 setBookId(book.id)
                                                             }}
                                                         >Edit</button>

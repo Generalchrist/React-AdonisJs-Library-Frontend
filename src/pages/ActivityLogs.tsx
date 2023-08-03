@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FC, useState } from "react"
 import { ActivityLogsModel } from "../core/_models"
-import { useQuery } from "react-query"
+import { useMutation, useQuery } from "react-query"
 import { getActivityLogs } from "../core/_requests"
 
 
@@ -19,6 +19,7 @@ const ActivityLogs = () => {
     },
     { cacheTime: 0, keepPreviousData: true, refetchOnWindowFocus: false }
   )
+
 
   const [activityLogsData, setActivityLogsData] = useState(response ? response : [])
 

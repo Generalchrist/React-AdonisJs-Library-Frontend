@@ -1,17 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Formik } from 'formik'
-import { createBook } from '../core/_requests';
-import { FC } from 'react';
+import { Formik, FormikValues } from 'formik'
+import { createBook, getBooks } from '../core/_requests';
+import { FC, useEffect, useState } from 'react';
+import $ from 'jquery'
+import { useMutation } from 'react-query';
 
-type props = {
-    showAddBookModal: boolean
+interface Props {
+    onAddBookSuccess: () => void;
+    onClose: () => void;
 }
 
+const AddBookModal: FC<Props> = ({ onAddBookSuccess, onClose }) => {
 
-const AddBookModal: FC<props> = ({showAddBookModal}) => {
 
-    
+    const handleCloseModal = () => {
+        // Call the onClose function provided by the parent to close the modal
+        onClose();
+    };
+
+
+    const createBookMutation = useMutation(createBook, {
+        onSuccess: () => {
+            onAddBookSuccess();
+        },
+    });
+
+
+    const handleSubmit = async (values: FormikValues) => {
+        try {
+            const formData = new FormData();
+            formData.append('name', values.name);
+            formData.append('author', values.author);
+            formData.append('cover_photo', values.cover_photo);
+            await createBookMutation.mutateAsync(formData);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
         <div className="modal modal-sheet position-fixed d-inline   " tabIndex={-1} role="dialog" id="modalSignin">
@@ -20,9 +46,7 @@ const AddBookModal: FC<props> = ({showAddBookModal}) => {
                     <div className="modal-header p-5 pb-4 border-bottom-0">
                         <h1 className="fw-bold mb-0 fs-2">Add Book</h1>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                            onClick={() => {
-                                window.location.href = "/books"
-                            }}
+                            onClick={handleCloseModal}
                         ></button>
                     </div>
 
@@ -34,19 +58,7 @@ const AddBookModal: FC<props> = ({showAddBookModal}) => {
                                 cover_photo: new File([], '')
 
                             }}
-                            onSubmit={(values, { setSubmitting }) => {
-                                const formData = new FormData();
-                                formData.append('name', values.name);
-                                formData.append('author', values.author);
-                                formData.append('cover_photo', values.cover_photo);
-                                createBook(formData).then((response) => {
-                                    if (response) {
-                                        // window.location.href = "/books"
-                                    }
-                                })
-                                setSubmitting(false);
-                            }
-                            }
+                            onSubmit={handleSubmit}
                         >
                             {({
                                 values,
@@ -105,9 +117,13 @@ const AddBookModal: FC<props> = ({showAddBookModal}) => {
                                     </div>
                                     <button disabled={isSubmitting}
                                         className="w-100 mb-2 btn btn-lg rounded-3 btn-primary"
-                                        onClick={() => {
-                                            // window.location.href = "/books"
-                                        }}
+                                        onClick={timer => {
+                                            setTimeout(() => {
+                                                handleCloseModal()
+                                            }, 400);
+                                        }
+                                        }
+
                                     >
                                         Submit
                                     </button>

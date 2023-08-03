@@ -1,13 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Formik } from 'formik';
 import React, { FC } from 'react'
 import { updateBook } from '../core/_requests';
 
 type Props = {
     bookId: number
+    onClose: () => void;
 }
 
-const EditBookModal: FC<Props> = ({bookId}) => {
+const EditBookModal: FC<Props> = ({ bookId, onClose }) => {
 
+    const handleCloseModal = () => {
+        // Call the onClose function provided by the parent to close the modal
+        onClose();
+    };
 
     return (
         <div className="modal modal-sheet position-fixed d-inline   " tabIndex={-1} role="dialog" id="modalSignin">
@@ -16,9 +22,7 @@ const EditBookModal: FC<Props> = ({bookId}) => {
                     <div className="modal-header p-5 pb-4 border-bottom-0">
                         <h1 className="fw-bold mb-0 fs-2">Add Book</h1>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                            onClick={() => {
-                                window.location.href = "/books"
-                            }}
+                            onClick={handleCloseModal}
                         ></button>
                     </div>
 
@@ -104,8 +108,10 @@ const EditBookModal: FC<Props> = ({bookId}) => {
                                     </div>
                                     <button disabled={isSubmitting}
                                         className="w-100 mb-2 btn btn-lg rounded-3 btn-primary"
-                                        onClick={() => {
-                                            // window.location.href = "/books"
+                                        onClick={timer => {
+                                            setTimeout(() => {
+                                                handleCloseModal()
+                                            }, 400);
                                         }}
                                     >
                                         Submit
